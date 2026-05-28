@@ -141,6 +141,53 @@
       font-size: 11px; color: #555; text-align: center;
       padding: 8px; line-height: 1.5;
     }
+
+    /* ── Cookie Cleaner ── */
+    .cc-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px; background: #16213e;
+      border-radius: 8px; margin-bottom: 10px;
+    }
+    .cc-row .cc-label { font-size: 13px; color: #ccc; }
+    .cc-row .cc-sub { font-size: 11px; color: #666; margin-top: 2px; }
+    .cc-section {
+      background: #16213e; border-radius: 8px;
+      padding: 10px 12px; margin-bottom: 10px;
+    }
+    .cc-section label {
+      display: block; font-size: 11px; color: #888;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    .cc-section textarea {
+      width: 100%; min-height: 130px;
+      background: #0f0f23; color: #e0e0e0;
+      border: 1px solid #2a2a4a; border-radius: 6px;
+      padding: 8px; font-size: 12px; font-family: ui-monospace, Menlo, Consolas, monospace;
+      resize: vertical;
+    }
+    .cc-section textarea:focus { outline: none; border-color: #e94560; }
+    .cc-actions { display: flex; gap: 8px; }
+    .cc-actions .cc-btn { flex: 1; }
+    .cc-btn {
+      padding: 8px 14px; border: 1px solid #2a2a4a;
+      background: #16213e; color: #ccc;
+      border-radius: 6px; font-size: 12px; font-weight: 600;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .cc-actions .cc-btn { padding: 10px; }
+    .cc-btn:hover:not(:disabled) { border-color: #e94560; color: #e94560; }
+    .cc-btn.primary {
+      background: #e94560; border-color: #e94560; color: #fff;
+    }
+    .cc-btn.primary:hover:not(:disabled) { background: #d63a55; color: #fff; }
+    .cc-btn:focus { outline: none; }
+    .cc-btn:disabled { opacity: 0.4; cursor: default; }
+    .cc-status {
+      font-size: 11px; color: #888; text-align: center;
+      padding: 8px 4px 0; line-height: 1.5;
+    }
+    .cc-status b { color: #e0e0e0; }
   </style>
 </head>
 <body>
@@ -150,6 +197,7 @@
     <button class="active" data-page="darkmode">🌙 Dark</button>
     <button data-page="nocookie">🚫 GDPR</button>
     <button data-page="jsonformat">{} JSON</button>
+    <button data-page="cookieclean">🍪 Clean</button>
   </div>
 
   <!-- ═══ Dark Mode Page ═══ -->
@@ -227,6 +275,42 @@
         Only triggers on actual JSON responses.<br>
         Regular HTML pages are never affected.
       </div>
+    </div>
+  </div>
+
+  <!-- ═══ Cookie Cleaner Page ═══ -->
+  <div class="page" id="page-cookieclean">
+    <div class="page-body">
+      <div class="cc-row">
+        <div>
+          <div class="cc-label">Clean on browser startup</div>
+          <div class="cc-sub">Deletes every cookie not on the whitelist below.</div>
+        </div>
+        <label class="big-switch">
+          <input type="checkbox" id="ccToggle">
+          <span class="big-slider"></span>
+        </label>
+      </div>
+
+      <div class="cc-row">
+        <div>
+          <div class="cc-label" id="ccCurrentLabel">Current site</div>
+          <div class="cc-sub" id="ccCurrentSub">—</div>
+        </div>
+        <button class="cc-btn primary" id="ccAddCurrent" disabled>+ Whitelist</button>
+      </div>
+
+      <div class="cc-section">
+        <label>Whitelist — one domain per line</label>
+        <textarea id="ccWhitelist" placeholder="github.com&#10;google.com&#10;reddit.com"></textarea>
+      </div>
+
+      <div class="cc-actions">
+        <button class="cc-btn" id="ccSave">Save whitelist</button>
+        <button class="cc-btn primary" id="ccCleanNow">Clean now</button>
+      </div>
+
+      <div class="cc-status" id="ccStatus"></div>
     </div>
   </div>
 
