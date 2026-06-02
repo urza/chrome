@@ -121,3 +121,17 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     return true; // async response
   }
 });
+
+// Keyboard navigation (keynav.js): tab actions a content script can't perform.
+// chrome.tabs.create / .remove need no extra permission (only reading a tab's
+// URL/title would).
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  if (!msg) return;
+  if (msg.type === "keynav_newtab") {
+    chrome.tabs.create({});
+    sendResponse({ ok: true });
+  } else if (msg.type === "keynav_closetab") {
+    if (sender.tab && sender.tab.id != null) chrome.tabs.remove(sender.tab.id);
+    sendResponse({ ok: true });
+  }
+});

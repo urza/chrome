@@ -197,6 +197,7 @@
     <button class="active" data-page="darkmode">🌙 Dark</button>
     <button data-page="nocookie">🚫 GDPR</button>
     <button data-page="jsonformat">{} JSON</button>
+    <button data-page="keynav">⌨️ Keys</button>
     <button data-page="cookieclean">🍪 Clean</button>
   </div>
 
@@ -275,6 +276,54 @@
         Only triggers on actual JSON responses.<br>
         Regular HTML pages are never affected.
       </div>
+    </div>
+  </div>
+
+  <!-- ═══ Keyboard Link Hints Page ═══ -->
+  <div class="page" id="page-keynav">
+    <div class="page-body">
+      <div class="nocookie-big-toggle">
+        <div class="ncicon">⌨️</div>
+        <label class="big-switch">
+          <input type="checkbox" id="keynavToggle" checked>
+          <span class="big-slider"></span>
+        </label>
+        <div class="status on" id="keynavStatus">ON</div>
+      </div>
+
+      <div class="nocookie-stats">
+        <b>Vimium-style keyboard link hints</b><br>
+        Press <b>j</b> to label every clickable link on screen — type the
+        label to open it in <b>this tab</b>. Press <b>J</b> to open in a
+        <b>new tab</b>. <b>Esc</b> cancels. The biggest, most central links
+        get the shortest labels.<br><br>
+        <b>Navigation</b> (hold Shift):
+        <b>H</b> back · <b>K</b> forward · <b>U</b> close tab · <b>O</b> new tab.
+      </div>
+
+      <div class="xdim-note">
+        Labels use right-hand keys only (y u i o p h j k l n m).<br>
+        Hints never trigger while you're typing in a text field.
+      </div>
+
+      <div class="cc-row">
+        <div>
+          <div class="cc-label" id="knCurrentLabel">Current site</div>
+          <div class="cc-sub" id="knCurrentSub">—</div>
+        </div>
+        <button class="cc-btn primary" id="knAddCurrent" disabled>Disable here</button>
+      </div>
+
+      <div class="cc-section">
+        <label>Disabled on these sites — one domain per line</label>
+        <textarea id="knExclude" placeholder="example.com&#10;mail.google.com"></textarea>
+      </div>
+
+      <div class="cc-actions">
+        <button class="cc-btn" id="knSave">Save list</button>
+      </div>
+
+      <div class="cc-status" id="knStatus"></div>
     </div>
   </div>
 

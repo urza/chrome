@@ -11,6 +11,7 @@ function switchToPage(page) {
   if (page === "darkmode") loadDarkMode();
   if (page === "nocookie") loadNoCookie();
   if (page === "jsonformat") loadJsonFormat();
+  if (page === "keynav") loadKeynav();
   if (page === "cookieclean") loadCookieClean();
   chrome.storage.local.set({ last_tab: page });
 }
@@ -165,6 +166,88 @@ jsonformatToggle.addEventListener("change", async () => {
   if (tab) {
     chrome.tabs.sendMessage(tab.id, { type: "jsonformat_toggle", enabled }).catch(() => {});
   }
+});
+
+// ═══════════════════════════════════
+//  Keyboard Link Hints
+// ═══════════════════════════════════
+const keynavToggle = document.getElementById("keynavToggle");
+const keynavStatus = document.getElementById("keynavStatus");
+const knExclude = document.getElementById("knExclude");
+const knSave = document.getElementById("knSave");
+const knStatus = document.getElementById("knStatus");
+const knCurrentLabel = document.getElementById("knCurrentLabel");
+const knCurrentSub = document.getElementById("knCurrentSub");
+const knAddCurrent = document.getElementById("knAddCurrent");
+
+const KN_EXCLUDE_KEY = "keynav_exclude";
+let knCurrentDomain = ""; // registrable domain of the active tab
+
+async function loadKeynav() {
+  const data = await chrome.storage.local.get(["keynav_enabled", KN_EXCLUDE_KEY]);
+  const enabled = data.keynav_enabled !== false;
+  keynavToggle.checked = enabled;
+  updateKeynavUI(enabled);
+
+  const list = Array.isArray(data[KN_EXCLUDE_KEY]) ? data[KN_EXCLUDE_KEY] : [];
+  knExclude.value = list.join("\n");
+  knStatus.textContent = "";
+  await refreshKnCurrent(list);
+}
+
+function updateKeynavUI(on) {
+  keynavStatus.textContent = on ? "ON" : "OFF";
+  keynavStatus.className = "status " + (on ? "on" : "off");
+}
+
+async function refreshKnCurrent(list) {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  let host = "";
+  try { host = tab && tab.url ? new URL(tab.url).hostname : ""; } catch {}
+  if (!host || /^(chrome|edge|about|chrome-extension|view-source|file):/.test(tab && tab.url || "")) {
+    knCurrentDomain = "";
+    knCurrentLabel.textContent = "Current site";
+    knCurrentSub.textContent = "Not a regular web page";
+    knAddCurrent.disabled = true;
+    knAddCurrent.textContent = "Disable here";
+    return;
+  }
+  knCurrentDomain = registrableDomain(host);
+  knCurrentLabel.textContent = host;
+  knCurrentSub.textContent = `Will add: ${knCurrentDomain}`;
+  if (isCoveredBy(host, list)) {
+    knAddCurrent.disabled = true;
+    knAddCurrent.textContent = "Already disabled";
+  } else {
+    knAddCurrent.disabled = false;
+    knAddCurrent.textContent = "Disable here";
+  }
+}
+
+async function saveKeynavExclude() {
+  const list = parseWhitelist(knExclude.value);
+  await chrome.storage.local.set({ [KN_EXCLUDE_KEY]: list });
+  knExclude.value = list.join("\n");
+  knStatus.textContent = "Saved.";
+  await refreshKnCurrent(list);
+}
+
+keynavToggle.addEventListener("change", async () => {
+  const enabled = keynavToggle.checked;
+  updateKeynavUI(enabled);
+  // Content scripts react via chrome.storage.onChanged — no messaging needed.
+  await chrome.storage.local.set({ keynav_enabled: enabled });
+});
+
+knSave.addEventListener("click", saveKeynavExclude);
+
+knAddCurrent.addEventListener("click", async () => {
+  if (!knCurrentDomain) return;
+  const list = parseWhitelist(knExclude.value);
+  if (!list.includes(knCurrentDomain)) list.push(knCurrentDomain);
+  knExclude.value = list.join("\n");
+  await saveKeynavExclude();
+  knStatus.textContent = `Disabled on ${knCurrentDomain}.`;
 });
 
 // ═══════════════════════════════════
