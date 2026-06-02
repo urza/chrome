@@ -42,6 +42,25 @@ Adds a "View Image" button back to Google Images, linking directly to the full-s
 ### {} JSON Formatter
 Auto-detects pure JSON response pages and formats them with syntax highlighting, collapsible sections, and a dark theme. Copy or view raw with one click. Never triggers on regular HTML pages.
 
+### ⌨️ Keyboard Navigation
+Vimium-style keyboard control for any page — drive the web without a mouse.
+
+- **Link hints** — press `j` to label every clickable element on screen, then type the label to open it in the **current tab**; press `J` to open in a **new tab**. `Esc` cancels. Labels use right-hand keys only (`y u i o p h j k l n m`), and the biggest, most central links get the shortest labels.
+- **Navigation** (hold Shift) — `H` back · `K` forward · `U` close tab · `O` new tab.
+- **Per-site exclude list** — disable hints/navigation on specific sites from the popup (one click for the current site). Applies live across all open tabs.
+
+Needs **no extra permissions** — it's a content script that simulates clicks, and tab open/close go through the background (which doesn't require the `tabs` permission). Hints never trigger while you're typing in a text field.
+
+### 🍪 Cookie Cleaner
+Wipes cookies on browser startup for every domain **not** on your whitelist — a simple way to stay logged in where you want and clear everything else automatically.
+
+- **Off by default** so it never surprise-deletes your cookies; enable it from the popup when you're ready.
+- Ships with a sensible default whitelist (Google, Microsoft/Apple, major socials, dev tools, media), all editable.
+- One click to whitelist the current site, and a **Clean now** button to run on demand.
+- Matching is subdomain-inclusive (`google.com` also keeps `mail.google.com`).
+
+Uses the `cookies` permission to read and remove cookies. Everything stays local — nothing is sent anywhere.
+
 ## Install
 
 1. Download or clone this repo

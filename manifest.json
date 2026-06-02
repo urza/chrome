@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "urza's extensions",
   "version": "2.0",
-  "description": "Dark mode, GDPR cookie dismisser, JSON formatter, Google Maps links, and view image — all in one open-source extension.",
+  "description": "Dark mode, GDPR cookie dismisser, JSON formatter, Google Maps links, view image, Vimium-style keyboard navigation, and cookie cleaner — all in one open-source extension.",
   "permissions": ["storage", "cookies"],
   "host_permissions": ["<all_urls>"],
   "background": {
