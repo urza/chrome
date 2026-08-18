@@ -36,9 +36,30 @@ const darkBrightness = document.getElementById("darkBrightness");
 const darkBrightnessVal = document.getElementById("darkBrightnessVal");
 const scopeSite = document.getElementById("scopeSite");
 const scopeGlobal = document.getElementById("scopeGlobal");
+const darkAutoToggle = document.getElementById("darkAutoToggle");
+const darkOverrideLabel = document.getElementById("darkOverrideLabel");
+const darkOverrideSub = document.getElementById("darkOverrideSub");
+const darkClearSite = document.getElementById("darkClearSite");
 
 let darkHost = "";
 let darkScope = "site"; // "site" or "global"
+
+function darkSiteKey() {
+  return "darkmode_" + darkHost;
+}
+
+// What the content script is actually doing right now — with auto mode on, the
+// stored settings alone don't say whether this page ended up inverted.
+async function queryPageDark() {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (!tab) return null;
+  try {
+    const res = await chrome.tabs.sendMessage(tab.id, { type: "darkmode_query" });
+    return res && typeof res.active === "boolean" ? res.active : null;
+  } catch {
+    return null; // no content script here (chrome:// pages, web store, …)
+  }
+}
 
 async function loadDarkMode() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -47,19 +68,39 @@ async function loadDarkMode() {
   try { darkHost = new URL(tab.url).hostname; } catch { darkHost = ""; }
   darkHostEl.textContent = darkHost ? `Current site: ${darkHost}` : "";
 
-  const siteKey = "darkmode_" + darkHost;
-  const data = await chrome.storage.local.get([siteKey, "darkmode_global", "darkmode_brightness"]);
+  const data = await chrome.storage.local.get([
+    darkSiteKey(), "darkmode_global", "darkmode_brightness", "darkmode_auto",
+  ]);
 
   const brightness = data.darkmode_brightness || 100;
   darkBrightness.value = brightness;
   darkBrightnessVal.textContent = brightness + "%";
 
-  const siteState = data[siteKey];
+  const siteState = data[darkSiteKey()];
   const globalState = data.darkmode_global || false;
-  const enabled = siteState !== undefined ? siteState : globalState;
+  const autoEnabled = data.darkmode_auto === true;
+  darkAutoToggle.checked = autoEnabled;
+
+  let enabled;
+  if (siteState !== undefined) enabled = siteState;
+  else if (autoEnabled) enabled = (await queryPageDark()) ?? globalState;
+  else enabled = globalState;
 
   darkToggle.checked = enabled;
   updateDarkStatus(enabled);
+  updateDarkOverrideRow(siteState, autoEnabled, globalState);
+}
+
+function updateDarkOverrideRow(siteState, autoEnabled, globalState) {
+  darkOverrideLabel.textContent = darkHost || "This site";
+  darkClearSite.disabled = siteState === undefined;
+  if (siteState !== undefined) {
+    darkOverrideSub.textContent = `Fixed ${siteState ? "ON" : "OFF"} for this site`;
+  } else if (autoEnabled) {
+    darkOverrideSub.textContent = "Following auto detection";
+  } else {
+    darkOverrideSub.textContent = `Following all-sites default (${globalState ? "ON" : "OFF"})`;
+  }
 }
 
 function updateDarkStatus(on) {
@@ -90,9 +131,47 @@ async function applyDark() {
       brightness,
     }).catch(() => {});
   }
+
+  const after = await chrome.storage.local.get([darkSiteKey(), "darkmode_global", "darkmode_auto"]);
+  updateDarkOverrideRow(after[darkSiteKey()], after.darkmode_auto === true, after.darkmode_global === true);
+}
+
+// Hand the content script the full picture so it can recompute which of
+// site override / auto detection / global default applies.
+async function pushDarkSettings() {
+  const data = await chrome.storage.local.get([
+    darkSiteKey(), "darkmode_global", "darkmode_brightness", "darkmode_auto",
+  ]);
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (!tab) return;
+  const siteState = data[darkSiteKey()];
+  try {
+    await chrome.tabs.sendMessage(tab.id, {
+      type: "darkmode_settings",
+      siteState: siteState === undefined ? null : siteState,
+      global: data.darkmode_global === true,
+      auto: data.darkmode_auto === true,
+      brightness: data.darkmode_brightness || 100,
+    });
+  } catch {
+    // no content script on this page
+  }
 }
 
 darkToggle.addEventListener("change", applyDark);
+
+darkAutoToggle.addEventListener("change", async () => {
+  await chrome.storage.local.set({ darkmode_auto: darkAutoToggle.checked });
+  await pushDarkSettings();
+  await loadDarkMode();
+});
+
+darkClearSite.addEventListener("click", async () => {
+  if (!darkHost) return;
+  await chrome.storage.local.remove(darkSiteKey());
+  await pushDarkSettings();
+  await loadDarkMode();
+});
 
 darkBrightness.addEventListener("input", () => {
   darkBrightnessVal.textContent = darkBrightness.value + "%";

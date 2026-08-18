@@ -226,6 +226,32 @@
           <span class="range-val" id="darkBrightnessVal">100%</span>
         </div>
       </div>
+
+      <div class="cc-row">
+        <div>
+          <div class="cc-label">Auto dark on light pages</div>
+          <div class="cc-sub">
+            Measures the page background and inverts only the light ones,
+            so sites that are already dark stay untouched.
+          </div>
+        </div>
+        <label class="big-switch">
+          <input type="checkbox" id="darkAutoToggle">
+          <span class="big-slider"></span>
+        </label>
+      </div>
+
+      <div class="cc-row">
+        <div>
+          <div class="cc-label" id="darkOverrideLabel">This site</div>
+          <div class="cc-sub" id="darkOverrideSub">—</div>
+        </div>
+        <button class="cc-btn primary" id="darkClearSite" disabled>Use auto</button>
+      </div>
+
+      <div class="xdim-note">
+        Order of precedence: this site's switch → auto detection → all-sites default.
+      </div>
     </div>
   </div>
 

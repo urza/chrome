@@ -30,6 +30,8 @@ You should do this for **every** Chrome extension you use. Most extensions are c
 ### 🌙 Dark Mode
 Instant dark mode for any website using CSS filter inversion. Adjustable brightness. Toggle per-site or globally. Images and videos are automatically re-inverted so they look normal.
 
+**Auto dark on light pages** measures the page's real background colour (sampling a few points, not just `<body>`) and inverts only the pages that come out light — sites that already ship a dark theme are left alone. Each verdict is cached per host, so the next visit applies it before the first paint instead of flashing white. Precedence: the site's own switch → auto detection → the all-sites default.
+
 ### 🚫 GDPR Cookie Consent Dismisser
 Auto-hides and auto-clicks cookie consent banners. Supports OneTrust, CookieBot, Didomi, Quantcast, GDPR plugins, and dozens more frameworks. Toggle off if a site breaks.
 
