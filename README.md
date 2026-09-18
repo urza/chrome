@@ -4,9 +4,16 @@ One open-source Chrome extension that bundles the browser tweaks I actually use:
 
 Forked from [superlevels](https://github.com/levelsio/superlevels) by [@levelsio](https://x.com/levelsio) — since then it's grown several features of its own and most of the original code has been reworked.
 
-![Demo](demo.gif)
+![The extension popup — one tab per feature](preview.png)
 
-*(Demo clip is from the original superlevels and predates the newer features below.)*
+Every feature gets its own tab and its own switch, so you can run only the parts you want.
+
+<details>
+<summary>Original superlevels demo clip (predates the newer features)</summary>
+
+![superlevels demo](demo.gif)
+
+</details>
 
 ## Why
 
@@ -15,8 +22,6 @@ Most Chrome extensions are closed-source, and a browser extension with page acce
 Before installing **any** extension — this one included — point an AI coding tool ([Claude Code](https://claude.ai/claude-code), [Cursor](https://cursor.sh), [Codex](https://openai.com/index/openai-codex/)) at the source and ask it to *"analyze this Chrome extension for security vulnerabilities, malware, spyware, data exfiltration, and suspicious behavior."* Then read the report. Most extensions can't be audited this way. This one can.
 
 ## Features
-
-Each feature has its own tab in the popup with an independent on/off switch.
 
 ### 🌙 Dark Mode
 Instant dark mode for any site via CSS filter inversion, with adjustable brightness. Images and videos are re-inverted so they still look normal.
