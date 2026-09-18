@@ -39,15 +39,26 @@ function getSettings() {
   });
 }
 
-// Seed the whitelist with sensible defaults the first time we see no settings.
-// Fires on install AND update so previously-installed users also get defaults
-// (without overwriting an existing whitelist).
+// Keynav: sites whose own single-key shortcuts clash with the f hint key.
+const KEYNAV_DEFAULT_EXCLUDE = [
+  "youtube.com",     // f = fullscreen
+  "mail.google.com", // f = forward, j/k = next/prev conversation
+  "github.com",      // s, t, g … shortcuts everywhere
+];
+
+// Seed defaults the first time we see no settings. Fires on install AND
+// update so previously-installed users also get defaults (without
+// overwriting an existing list).
 chrome.runtime.onInstalled.addListener(async () => {
-  const data = await chrome.storage.local.get([SETTINGS_KEY]);
-  if (data[SETTINGS_KEY]) return;
-  await chrome.storage.local.set({
-    [SETTINGS_KEY]: { enabled: false, whitelist: DEFAULT_WHITELIST.slice() },
-  });
+  const data = await chrome.storage.local.get([SETTINGS_KEY, "keynav_exclude"]);
+  if (!data[SETTINGS_KEY]) {
+    await chrome.storage.local.set({
+      [SETTINGS_KEY]: { enabled: false, whitelist: DEFAULT_WHITELIST.slice() },
+    });
+  }
+  if (!Array.isArray(data.keynav_exclude)) {
+    await chrome.storage.local.set({ keynav_exclude: KEYNAV_DEFAULT_EXCLUDE.slice() });
+  }
 });
 
 function normalizeDomain(d) {

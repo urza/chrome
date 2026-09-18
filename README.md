@@ -47,9 +47,9 @@ Auto-detects pure JSON response pages and formats them with syntax highlighting,
 ### ⌨️ Keyboard Navigation
 Vimium-style keyboard control for any page — drive the web without a mouse.
 
-- **Link hints** — press `j` to label every clickable element on screen, then type the label to open it in the **current tab**; press `J` to open in a **new tab**. `Esc` cancels. Labels use right-hand keys only (`y u i o p h j k l n m`), and the biggest, most central links get the shortest labels.
+- **Link hints** — press `f` (like Vimium) to label every clickable element on screen, then type the label to open it in the **current tab**; press `F` to open in a **new tab**. `Esc` cancels. Labels use right-hand keys only (`y u i o p h j k l n m`), and the biggest, most central links get the shortest labels.
 - **Navigation** (hold Shift) — `H` back · `K` forward · `U` close tab · `O` new tab.
-- **Per-site exclude list** — disable hints/navigation on specific sites from the popup (one click for the current site). Applies live across all open tabs.
+- **Per-site exclude list** — disable hints/navigation on specific sites from the popup (one click for the current site). Applies live across all open tabs. Ships pre-seeded with sites whose own shortcuts clash (`youtube.com`, `mail.google.com`, `github.com`) — fully editable.
 
 Needs **no extra permissions** — it's a content script that simulates clicks, and tab open/close go through the background (which doesn't require the `tabs` permission). Hints never trigger while you're typing in a text field.
 

@@ -2,8 +2,8 @@
   // ──────────────────────────────────────────────────────────────
   //  Keyboard link hints (Vimium-style)
   //
-  //  j  → show hints, type the label to click the link in THIS tab
-  //  J  → same, but open the link in a NEW tab
+  //  f  → show hints, type the label to click the link in THIS tab
+  //  F  → same, but open the link in a NEW tab
   //  Esc / any non-matching key → dismiss
   //
   //  Pure content-script: no extra permissions. Finds visible clickable
@@ -271,9 +271,9 @@
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     if (isTypingTarget()) return;
 
-    if (e.key === "j" || e.key === "J") {
+    if (e.key === "f" || e.key === "F") {
       e.preventDefault();
-      newTab = e.key === "J";
+      newTab = e.key === "F";
       show();
       return;
     }
