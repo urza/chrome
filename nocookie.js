@@ -1,5 +1,5 @@
 // ═══════════════════════════════════
-//  urza's extensions: Cookie Consent Auto-Dismisser
+//  urza's extensions: Cookie Banner Dismisser
 //  Based on I-Still-Dont-Care-About-Cookies
 // ═══════════════════════════════════
 (() => {

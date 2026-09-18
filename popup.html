@@ -57,7 +57,7 @@
       margin-bottom: 8px;
     }
 
-    /* ── Big toggle (shared by Dark/GDPR/JSON) ── */
+    /* ── Big toggle (shared by Dark/Banners/JSON) ── */
     .big-switch {
       position: relative; width: 56px; height: 30px;
     }
@@ -123,7 +123,7 @@
       background: #2a1525;
     }
 
-    /* ── Cookie Consent (GDPR) & JSON Formatter ── */
+    /* ── Cookie Banner Dismisser & JSON Formatter ── */
     .nocookie-big-toggle {
       display: flex; flex-direction: column; align-items: center;
       padding: 24px 0 16px; gap: 12px;
@@ -195,7 +195,7 @@
   <!-- Nav -->
   <div class="nav">
     <button class="active" data-page="darkmode">🌙 Dark</button>
-    <button data-page="nocookie">🚫 GDPR</button>
+    <button data-page="nocookie">🚫 Banners</button>
     <button data-page="jsonformat">{} JSON</button>
     <button data-page="keynav">⌨️ Keys</button>
     <button data-page="gmailfix">✉️ Gmail</button>
@@ -256,7 +256,7 @@
     </div>
   </div>
 
-  <!-- ═══ Cookie Consent (GDPR) Page ═══ -->
+  <!-- ═══ Cookie Banner Dismisser Page ═══ -->
   <div class="page" id="page-nocookie">
     <div class="page-body">
       <div class="nocookie-big-toggle">
@@ -269,7 +269,7 @@
       </div>
 
       <div class="nocookie-stats">
-        <b>Auto-dismisses cookie consent popups</b><br>
+        <b>Cookie banner dismisser</b><br>
         Hides banners via CSS and auto-clicks accept buttons for common consent frameworks:
         OneTrust, CookieBot, Didomi, Quantcast, GDPR plugins, and more.
       </div>

@@ -191,7 +191,7 @@ scopeGlobal.addEventListener("click", () => {
 });
 
 // ═══════════════════════════════════
-//  Cookie Consent (GDPR) Dismisser
+//  Cookie Banner Dismisser
 // ═══════════════════════════════════
 const nocookieToggle = document.getElementById("nocookieToggle");
 const nocookieStatus = document.getElementById("nocookieStatus");
