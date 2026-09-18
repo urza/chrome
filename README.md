@@ -53,6 +53,9 @@ Vimium-style keyboard control for any page — drive the web without a mouse.
 
 Needs **no extra permissions** — it's a content script that simulates clicks, and tab open/close go through the background (which doesn't require the `tabs` permission). Hints never trigger while you're typing in a text field.
 
+### ✉️ Gmail Yellow Importance Marker
+Gmail's Sept 2026 update recolored the "important" marker from yellow to blue. This restores the classic yellow marker in the email list by overriding the CSS variable Gmail uses for the marker fill — with a fallback that paints the original yellow icon directly if Gmail's obfuscated class/variable names change again.
+
 ### 🍪 Cookie Cleaner
 Wipes cookies on browser startup for every domain **not** on your whitelist — a simple way to stay logged in where you want and clear everything else automatically.
 

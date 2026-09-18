@@ -12,6 +12,7 @@ function switchToPage(page) {
   if (page === "nocookie") loadNoCookie();
   if (page === "jsonformat") loadJsonFormat();
   if (page === "keynav") loadKeynav();
+  if (page === "gmailfix") loadGmailFix();
   if (page === "cookieclean") loadCookieClean();
   chrome.storage.local.set({ last_tab: page });
 }
@@ -245,6 +246,31 @@ jsonformatToggle.addEventListener("change", async () => {
   if (tab) {
     chrome.tabs.sendMessage(tab.id, { type: "jsonformat_toggle", enabled }).catch(() => {});
   }
+});
+
+// ═══════════════════════════════════
+//  Gmail Yellow Importance Marker
+// ═══════════════════════════════════
+const gmailfixToggle = document.getElementById("gmailfixToggle");
+const gmailfixStatus = document.getElementById("gmailfixStatus");
+
+async function loadGmailFix() {
+  const data = await chrome.storage.local.get(["gmailfix_enabled"]);
+  const enabled = data.gmailfix_enabled !== false;
+  gmailfixToggle.checked = enabled;
+  updateGmailFixUI(enabled);
+}
+
+function updateGmailFixUI(on) {
+  gmailfixStatus.textContent = on ? "ON" : "OFF";
+  gmailfixStatus.className = "status " + (on ? "on" : "off");
+}
+
+gmailfixToggle.addEventListener("change", async () => {
+  const enabled = gmailfixToggle.checked;
+  updateGmailFixUI(enabled);
+  // Content script reacts via chrome.storage.onChanged — no messaging needed.
+  await chrome.storage.local.set({ gmailfix_enabled: enabled });
 });
 
 // ═══════════════════════════════════

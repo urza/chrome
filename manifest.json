@@ -17,6 +17,10 @@
     "js": ["darkmode.js", "nocookie.js"],
     "run_at": "document_start"
   }, {
+    "matches": ["*://mail.google.com/*"],
+    "js": ["gmailfix.js"],
+    "run_at": "document_start"
+  }, {
     "matches": ["<all_urls>"],
     "js": ["jsonformat.js"],
     "run_at": "document_end"

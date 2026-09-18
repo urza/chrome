@@ -198,6 +198,7 @@
     <button data-page="nocookie">🚫 GDPR</button>
     <button data-page="jsonformat">{} JSON</button>
     <button data-page="keynav">⌨️ Keys</button>
+    <button data-page="gmailfix">✉️ Gmail</button>
     <button data-page="cookieclean">🍪 Clean</button>
   </div>
 
@@ -301,6 +302,32 @@
       <div class="xdim-note">
         Only triggers on actual JSON responses.<br>
         Regular HTML pages are never affected.
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Gmail Yellow Marker Page ═══ -->
+  <div class="page" id="page-gmailfix">
+    <div class="page-body">
+      <div class="nocookie-big-toggle">
+        <div class="ncicon">✉️</div>
+        <label class="big-switch">
+          <input type="checkbox" id="gmailfixToggle" checked>
+          <span class="big-slider"></span>
+        </label>
+        <div class="status on" id="gmailfixStatus">ON</div>
+      </div>
+
+      <div class="nocookie-stats">
+        <b>Yellow importance marker</b><br>
+        Gmail's Sept 2026 update recolored the "important" marker from
+        yellow to blue. This restores the classic yellow marker in the
+        email list.
+      </div>
+
+      <div class="xdim-note">
+        Only runs on mail.google.com.<br>
+        Applies live to open Gmail tabs.
       </div>
     </div>
   </div>
