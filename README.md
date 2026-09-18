@@ -8,13 +8,6 @@ Forked from [superlevels](https://github.com/levelsio/superlevels) by [@levelsio
 
 Every feature gets its own tab and its own switch, so you can run only the parts you want.
 
-<details>
-<summary>Original superlevels demo clip (predates the newer features)</summary>
-
-![superlevels demo](demo.gif)
-
-</details>
-
 ## Why
 
 Most Chrome extensions are closed-source, and a browser extension with page access is about the most dangerous software you can install. This one is small enough to read in a sitting: seven content scripts and a background worker, no build step, no dependencies, no bundled minified blobs.
