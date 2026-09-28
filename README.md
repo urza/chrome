@@ -82,6 +82,10 @@ Manifest V3, and only two permissions:
 - **No external network requests.** The one image the extension ships is inlined as a data URI.
 - All source is right here. Read it, audit it, fork it.
 
-## License
+LICENSE: YOU CAN USE THIS SOFTWARE "AS IS" (NO WARRANTY) IN ANY WAY YOU WANT, BUT BY DOING SO YOU ACKNOWLEDGE THAT:
 
-MIT
+Science is a force for human liberation and one of humanity's greatest inventions. Through open inquiry, evidence, and the willingness to correct our errors, we expand our understanding and our ability to improve the human condition.
+
+Technology is the physical manifestation of our discoveries. By building better tools, we overcome limitations, reduce suffering, and create abundance.
+
+Free markets enable cooperation on an extraordinary scale. Through competition, exchange, and entrepreneurship, they reward useful ideas, spread innovation, and help lift people out of poverty.
