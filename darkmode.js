@@ -372,8 +372,9 @@
   // element holds the content, and the content would turn light again. So
   // the skin loses its picture and shows plain black (see buildCSS).
 
-  // The elements that gave a dark colour in the last detectLightPage() run.
-  let darkSources = new Set();
+  // The dark backgrounds of the last detectLightPage() run, sorted by isSkin().
+  let skins = new Set();
+  let plainDark = new Set();
 
   // True if some visible text has el as its background. Such text is light,
   // and the inversion makes it dark, so a black background would hide it.
@@ -391,17 +392,23 @@
     return false;
   }
 
+  // el has a dark background colour. Many sample points give the same
+  // element, so each element is judged once in a run.
+  function isSkin(el) {
+    if (skins.has(el)) return true;
+    if (plainDark.has(el)) return false;
+    // No picture: a dark menu or footer. It inverts to light.
+    // A photo background is re-inverted and keeps its picture. Inside
+    // re-inverted media, a black background would show white.
+    const skin = getComputedStyle(el).backgroundImage.includes("url(")
+      && !isPhotoBackground(el) && !el.closest(WRAPPERS) && !hasTextOn(el);
+    (skin ? skins : plainDark).add(el);
+    return skin;
+  }
+
   // Call only while the page is inverted.
   function markSkins() {
-    for (const el of darkSources) {
-      if (!el.isConnected || el.hasAttribute(SKIN_ATTR)) continue;
-      // No picture: a dark menu or footer. It inverts to light, as before.
-      if (!getComputedStyle(el).backgroundImage.includes("url(")) continue;
-      // A photo background is re-inverted and keeps its picture.
-      if (isPhotoBackground(el) || el.closest(WRAPPERS)) continue;
-      if (hasTextOn(el)) continue;
-      el.setAttribute(SKIN_ATTR, "");
-    }
+    for (const el of skins) if (el.isConnected) el.setAttribute(SKIN_ATTR, "");
   }
 
   // The page's own <html> background. While the filter is on, our sheet paints
@@ -448,18 +455,20 @@
     // a page white that is 59 % white.
     const GRID = [0.1, 0.3, 0.5, 0.7, 0.9];
     let light = 0, dark = 0;
-    darkSources = new Set();
+    skins = new Set();
+    plainDark = new Set();
     if (w > 0 && h > 0) {
       for (const fx of GRID) {
         for (const fy of GRID) {
           const bg = opaqueBgUnder(document.elementFromPoint(w * fx, h * fy));
-          if (!bg) continue;
-          if (isLightColor(bg.color)) {
-            light++;
-          } else {
-            dark++;
-            darkSources.add(bg.el);
-          }
+          // A skin shows black on the inverted page too, so it does not
+          // vote. On the alza.cz home page the top grid row fell on a 5 px
+          // strip of the skin, and with both sides that made a 12 to 12 tie.
+          // A marked skin has a white background from our sheet: skip it,
+          // so that the vote is the same while the page is inverted.
+          if (!bg || bg.el.hasAttribute(SKIN_ATTR)) continue;
+          if (isLightColor(bg.color)) light++;
+          else if (!isSkin(bg.el)) dark++;
         }
       }
       // In a narrow window the skin shows only in the margins, outside the
@@ -469,7 +478,7 @@
       for (const x of [4, cw - 5]) {
         for (const fy of GRID) {
           const bg = opaqueBgUnder(document.elementFromPoint(x, h * fy));
-          if (bg && !isLightColor(bg.color)) darkSources.add(bg.el);
+          if (bg && !isLightColor(bg.color)) isSkin(bg.el);
         }
       }
     }
