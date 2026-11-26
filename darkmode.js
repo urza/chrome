@@ -523,7 +523,12 @@
 
   function runCheck() {
     if (!darkWanted) return;
-    const light = detectLightPage();
+    const detected = detectLightPage();
+    // The site's own switch is manual: ON inverts the page, whatever the
+    // check says. It is the way out when the check is wrong (a white page
+    // that it calls dark). Only "All sites" depends on the check. The check
+    // still runs here, because it finds the skins and fills the cache.
+    const light = siteState === true ? true : detected;
     if (light === null) {
       // Leave the page as it is, cache nothing, and look again soon: an app can
       // paint its theme after every fixed check below has run. The time limit
@@ -538,9 +543,11 @@
     if (light !== isDarkApplied()) applyDarkMode(light, brightness);
     if (light) markSkins();
     setVeil(false);
-    if (light !== lastVerdict) {
-      lastVerdict = light;
-      rememberVerdict(light);
+    // The cache holds what the page is, not what the switch forced: it serves
+    // the time after "Follow all sites".
+    if (detected !== null && detected !== lastVerdict) {
+      lastVerdict = detected;
+      rememberVerdict(detected);
     }
   }
 
@@ -618,8 +625,11 @@
     const wanted = computeDarkWanted();
     if (wanted !== darkWanted) {
       setDarkWanted(wanted);
-    } else if (brightnessChanged && wanted && isDarkApplied()) {
-      applyDarkMode(true, brightness);
+    } else if (wanted) {
+      if (brightnessChanged && isDarkApplied()) applyDarkMode(true, brightness);
+      // Dark stays wanted, but its source can change: the site switch forces
+      // the inversion, and "All sites" asks the check.
+      runCheck();
     }
   }
 
@@ -635,9 +645,23 @@
     // last visit is inverted now, before first paint, so it does not flash white.
     // Any other page is veiled until the first check.
     const cached = (data[cacheKey] || {})[host];
-    if (cached && cached[0] === 1) applyDarkMode(true, brightness);
+    if (siteState === true || (cached && cached[0] === 1)) applyDarkMode(true, brightness);
     else setVeil(cached ? "canvas" : "hide");
     setDarkWanted(true);
+  });
+
+  // The popup asks if this page is inverted now, to show it on the big switch.
+  // The popup can ask before the storage event below arrives here, so read
+  // the settings first and answer for the state they give.
+  chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+    if (!msg || msg.type !== "darkmode_state") return;
+    chrome.storage.local.get([storageKey, globalKey], (data) => {
+      siteState = data[storageKey];
+      globalSetting = data[globalKey];
+      syncState();
+      sendResponse({ inverted: isDarkApplied() });
+    });
+    return true; // the answer comes later
   });
 
   // React live across all open tabs when settings change in storage —

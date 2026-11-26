@@ -35,9 +35,10 @@ chrome.storage.local.get(["last_tab"], (data) => {
 //  Dark Mode
 // ═══════════════════════════════════
 // "All sites" (darkmode_global) is the default for every site: false (Off),
-// "auto" (Prague sunset to 1h after sunrise), or true (On). The big switch is
-// for the current site only (darkmode_<host>); it overrides "All sites" and
-// stays saved until "Follow all sites" removes it.
+// "auto" (Prague sunset to 1h after sunrise), or true (On). It inverts only
+// the pages that a check calls light. The big switch is manual and for the
+// current site only (darkmode_<host>): ON always inverts, OFF never does. It
+// overrides "All sites" and stays saved until "Follow all sites" removes it.
 const darkToggle = document.getElementById("darkToggle");
 const darkStatus = document.getElementById("darkStatus");
 const darkHostEl = document.getElementById("darkHost");
@@ -130,17 +131,29 @@ async function loadDarkMode() {
     globalMode === "auto" ? scheduleState.isDark :
     false;
 
-  // ON means "dark mode is on here", also when the page is already dark and
-  // the content script therefore leaves it as it is.
-  const enabled = siteState !== undefined ? siteState : globalDark;
+  // The switch shows if the page is inverted now, so one click flips what the
+  // user sees. With no saved choice and "All sites" on, only the page knows:
+  // the check leaves a page alone that it calls dark. If the check is wrong
+  // (a white page), the switch shows OFF, and one click forces it ON.
+  let enabled = siteState !== undefined ? siteState : globalDark;
+  let alreadyDark = false;
+  if (darkHost && siteState === undefined && globalDark) {
+    try {
+      const state = await chrome.tabs.sendMessage(tab.id, { type: "darkmode_state" });
+      if (state) enabled = state.inverted;
+      alreadyDark = !enabled;
+    } catch {
+      // No content script in this tab (a page opened before the install).
+    }
+  }
 
   darkToggle.checked = enabled;
   updateDarkStatus(enabled);
   updateDarkGlobalUI(globalMode, scheduleState);
-  updateDarkOverrideRow(siteState, globalMode, globalDark);
+  updateDarkOverrideRow(siteState, globalMode, globalDark, alreadyDark);
 }
 
-function updateDarkOverrideRow(siteState, globalMode, globalDark) {
+function updateDarkOverrideRow(siteState, globalMode, globalDark, alreadyDark) {
   darkOverrideLabel.textContent = darkHost || "This site";
   darkClearSite.disabled = !darkHost || siteState === undefined;
   if (!darkHost) {
@@ -152,6 +165,7 @@ function updateDarkOverrideRow(siteState, globalMode, globalDark) {
   } else {
     darkOverrideSub.textContent = `Following All sites (${globalDark ? "ON" : "OFF"})`;
   }
+  if (alreadyDark) darkOverrideSub.textContent += ". This page looks dark, so it is not inverted.";
 }
 
 function updateDarkStatus(on) {
